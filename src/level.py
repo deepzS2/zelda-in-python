@@ -8,6 +8,7 @@ from player import Player
 from support import *
 from tile import Tile
 from debug import debug
+from ui import UI
 from weapon import Weapon
 
 
@@ -18,12 +19,16 @@ class Level:
         # Get display surface
         self.display_surface = pygame.display.get_surface()
 
+        # Sprites group
         self.visible_sprites = YSortCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
 
+        # Attack sprites
         self.current_attack = None
 
         self.create_map()
+
+        self.ui = UI()
 
     def create_map(self):
         """Create the map with the svgs on map/*.csv"""
@@ -61,9 +66,11 @@ class Level:
             (2000, 1430), self.obstacle_sprites, self.create_attack, self.destroy_attack, [self.visible_sprites])
 
     def create_attack(self):
+        """Create the weapon sprite"""
         self.current_attack = Weapon(self.player, [self.visible_sprites])
 
     def destroy_attack(self):
+        """Destroy the weapon sprite"""
         if self.current_attack:
             self.current_attack.kill()
 
@@ -72,7 +79,7 @@ class Level:
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.visible_sprites.update()
-        debug(self.player.status)
+        self.ui.display(self.player)
 
 
 class YSortCameraGroup(pygame.sprite.Group):
