@@ -10,7 +10,7 @@ from tile import Tile
 class Player(pygame.sprite.Sprite):
     """Handle player movement, inputs, collisions, hitboxes, etc."""
 
-    def __init__(self, pos: Tuple[int, int], obstacle_sprites: pygame.sprite.Group, *groups: pygame.sprite.AbstractGroup) -> None:
+    def __init__(self, pos: Tuple[int, int], obstacle_sprites: pygame.sprite.Group, create_attack: Callable[[], None], destroy_attack: Callable[[], None], *groups: pygame.sprite.AbstractGroup) -> None:
         super().__init__(*groups)
 
         # Graphics setup
@@ -31,6 +31,15 @@ class Player(pygame.sprite.Sprite):
         # Movement
         self.speed = 5
         self.direction = pygame.math.Vector2()
+
+        # Weapon
+        self.can_switch_weapon = True
+        self.create_attack = create_attack
+        self.destroy_attack = destroy_attack
+        self.switch_weapon_time = None
+        self.switch_duration_cooldown = 200
+        self.weapon_index = 0
+        self.weapon = list(weapon_data.keys())[self.weapon_index]
 
         # Attack
         self.attacking = False
@@ -76,12 +85,22 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] and not self.attacking:
             self.attacking = True
             self.attack_time = pygame.time.get_ticks()
-            print('attack')
+            self.create_attack()
 
         if keys[pygame.K_LCTRL] and not self.attacking:
             self.attacking = True
             self.attack_time = pygame.time.get_ticks()
-            print("magic")
+            self.create_attack()
+
+        if keys[pygame.K_q] and self.can_switch_weapon:
+            self.can_switch_weapon = False
+            self.switch_weapon_time = pygame.time.get_ticks()
+
+            if self.weapon_index < len(list(weapon_data.keys())) - 1:
+                self.weapon_index += 1
+            else:
+                self.weapon_index = 0
+            self.weapon = list(weapon_data.keys())[self.weapon_index]
 
     def get_status(self):
         """Set the players status based on inputs"""
@@ -135,11 +154,15 @@ class Player(pygame.sprite.Sprite):
                         self.hitbox.top = sprite.hitbox.bottom
 
     def cooldowns(self):
-        """Handle attack cooldowns"""
+        """Handle cooldowns"""
         current_time = pygame.time.get_ticks()
 
         if self.attacking and current_time - self.attack_time >= self.attack_cooldown:
             self.attacking = False
+            self.destroy_attack()
+
+        if not self.can_switch_weapon and current_time - self.switch_weapon_time >= self.switch_duration_cooldown:
+            self.can_switch_weapon = True
 
     def animate(self):
         """Handles animation"""
