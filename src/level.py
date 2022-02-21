@@ -63,11 +63,15 @@ class Level:
                                  self.visible_sprites, self.obstacle_sprites], surface=surface)
 
         self.player = Player(
-            (2000, 1430), self.obstacle_sprites, self.create_attack, self.destroy_attack, [self.visible_sprites])
+            (2000, 1430), self.obstacle_sprites, self.create_attack, self.create_magic, self.destroy_attack, [self.visible_sprites])
 
     def create_attack(self):
         """Create the weapon sprite"""
         self.current_attack = Weapon(self.player, [self.visible_sprites])
+
+    def create_magic(self, style: str, strength: int, cost: int):
+        """Create the magic sprite"""
+        pass
 
     def destroy_attack(self):
         """Destroy the weapon sprite"""
