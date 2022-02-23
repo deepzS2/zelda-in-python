@@ -54,15 +54,15 @@ class AnimationPlayer:
 
         return new_frames
 
-    def create_grass_particles(self, pos: Tuple[int, int], groups: pygame.sprite.AbstractGroup):
+    def create_grass_particles(self, pos: Tuple[int, int], *groups: pygame.sprite.AbstractGroup):
         animation_frames = choice(self.frames['leaf'])
 
-        ParticleEffect(pos, animation_frames, groups)
+        ParticleEffect(pos, animation_frames, *groups)
 
-    def create_particles(self, animation_type: str, pos: Tuple[int, int], groups: pygame.sprite.AbstractGroup):
+    def create_particles(self, animation_type: str, pos: Tuple[int, int], *groups: pygame.sprite.AbstractGroup):
         animation_frames = self.frames[animation_type]
 
-        ParticleEffect(pos, animation_frames, groups)
+        ParticleEffect(pos, animation_frames, *groups)
 
 
 class ParticleEffect(pygame.sprite.Sprite):
@@ -70,6 +70,8 @@ class ParticleEffect(pygame.sprite.Sprite):
 
     def __init__(self, pos: Tuple[int, int], animation_frames: List[pygame.Surface], *groups: pygame.sprite.AbstractGroup) -> None:
         super().__init__(*groups)
+
+        self.sprite_type = 'magic'
 
         self.frame_index = 0
         self.animation_speed = 0.15
@@ -86,5 +88,5 @@ class ParticleEffect(pygame.sprite.Sprite):
         else:
             self.image = self.frames[int(self.frame_index)]
 
-    def update(self) -> None:
+    def update(self):
         self.animate()

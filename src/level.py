@@ -1,8 +1,9 @@
 from pydoc import visiblename
-import random
+from random import randint, choice
 from typing import *
 import pygame
 from enemy import Enemy
+from magic import MagicPlayer
 from particles import AnimationPlayer
 
 from settings import *
@@ -34,6 +35,7 @@ class Level:
         self.ui = UI()
 
         self.animation_player = AnimationPlayer()
+        self.magic_player = MagicPlayer(self.animation_player)
 
     def create_map(self):
         """Create the map with the svgs on map/*.csv"""
@@ -59,7 +61,7 @@ class Level:
                         if style == 'boundary':
                             Tile((x, y), 'invisible', [self.obstacle_sprites])
                         if style == 'grass':
-                            random_grass = random.choice(graphics['grass'])
+                            random_grass = choice(graphics['grass'])
                             Tile(
                                 (x, y),
                                 'grass',
@@ -105,7 +107,12 @@ class Level:
 
     def create_magic(self, style: str, strength: int, cost: int):
         """Create the magic sprite"""
-        pass
+        if style == 'heal':
+            self.magic_player.heal(self.player, strength, cost, [
+                                   self.visible_sprites])
+        elif style == 'flame':
+            self.magic_player.flame(
+                self.player, cost, [self.visible_sprites, self.attack_sprites])
 
     def destroy_attack(self):
         """Destroy the weapon sprite"""
@@ -127,7 +134,7 @@ class Level:
                             pos = target_sprite.rect.center
                             offset = pygame.math.Vector2(0, 75)
 
-                            for leaf in range(random.randint(3, 6)):
+                            for leaf in range(randint(3, 6)):
                                 self.animation_player.create_grass_particles(
                                     pos - offset, [self.visible_sprites])
 
