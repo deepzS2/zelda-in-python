@@ -3,12 +3,12 @@ import random
 from typing import *
 import pygame
 from enemy import Enemy
+from particles import AnimationPlayer
 
 from settings import *
 from player import Player
 from support import *
 from tile import Tile
-from debug import debug
 from ui import UI
 from weapon import Weapon
 
@@ -32,6 +32,8 @@ class Level:
         self.create_map()
 
         self.ui = UI()
+
+        self.animation_player = AnimationPlayer()
 
     def create_map(self):
         """Create the map with the svgs on map/*.csv"""
@@ -89,6 +91,7 @@ class Level:
                                       (x, y),
                                       self.obstacle_sprites,
                                       self.damage_player,
+                                      self.trigger_death_particles,
                                       [
                                           self.visible_sprites, self.attackable_sprites
                                       ])
@@ -121,10 +124,22 @@ class Level:
                 if collision_sprites:
                     for target_sprite in collision_sprites:
                         if target_sprite.sprite_type == 'grass':
+                            pos = target_sprite.rect.center
+                            offset = pygame.math.Vector2(0, 75)
+
+                            for leaf in range(random.randint(3, 6)):
+                                self.animation_player.create_grass_particles(
+                                    pos - offset, [self.visible_sprites])
+
                             target_sprite.kill()
                         else:
                             target_sprite.get_damage(
                                 self.player, attack_sprite.sprite_type)
+
+    def trigger_death_particles(self, pos: Tuple[int, int], particle_type: str):
+        """Monsters death animation invocation"""
+        self.animation_player.create_particles(
+            particle_type, pos, [self.visible_sprites])
 
     def damage_player(self, amount: int, attack_type: str):
         """Create the enemy damage interaction with the player"""
@@ -132,6 +147,8 @@ class Level:
             self.player.health -= amount
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
+            self.animation_player.create_particles(
+                attack_type, self.player.rect.center, [self.visible_sprites])
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)
@@ -159,6 +176,7 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.floor_rect = self.floor_surface.get_rect(topleft=(0, 0))
 
     def custom_draw(self, player: Player):
+        """Center player to camera"""
         self.offset.x = player.rect.centerx - self.half_width
         self.offset.y = player.rect.centery - self.half_height
 
@@ -170,6 +188,7 @@ class YSortCameraGroup(pygame.sprite.Group):
             self.display_surface.blit(sprite.image, offset_pos)
 
     def enemy_update(self, player: Player):
+        """Update enemies"""
         enemy_sprites = [
             sprite for sprite in self.sprites() if hasattr(sprite, 'sprite_type') and sprite.sprite_type == 'enemy'
         ]

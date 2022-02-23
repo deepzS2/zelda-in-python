@@ -10,7 +10,7 @@ from support import *
 class Enemy(Entity):
     """Generic enemy class"""
 
-    def __init__(self, monster_name: str, pos: Tuple[int, int], obstacle_sprites: pygame.sprite.Group, damage_player: Callable[[int, str], None], *groups: pygame.sprite.AbstractGroup) -> None:
+    def __init__(self, monster_name: str, pos: Tuple[int, int], obstacle_sprites: pygame.sprite.Group, damage_player: Callable[[int, str], None], trigger_death_particles: Callable[[Tuple[int, int], str], None], *groups: pygame.sprite.AbstractGroup) -> None:
         super().__init__(*groups)
         self.sprite_type = 'enemy'
 
@@ -39,6 +39,7 @@ class Enemy(Entity):
         self.attack_time = None
         self.attack_cooldown = 400
         self.damage_player = damage_player
+        self.trigger_death_particles = trigger_death_particles
 
         self.vulnerable = True
         self.hit_time = None
@@ -96,6 +97,7 @@ class Enemy(Entity):
     def check_damage(self):
         """Check if the enemy is dead"""
         if self.health < 0:
+            self.trigger_death_particles(self.rect.center, self.monster_name)
             self.kill()
 
     def hit_reaction(self):
