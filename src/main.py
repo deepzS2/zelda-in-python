@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+from cmath import log
 from settings import WIDTH, HEIGTH, FPS
 from level import Level
 import pygame
@@ -25,6 +26,10 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_m:
+                        self.level.toggle_menu()
 
             self.screen.fill('black')
             self.level.run()

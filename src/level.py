@@ -12,6 +12,7 @@ from support import *
 from tile import Tile
 from ui import UI
 from weapon import Weapon
+from upgrade import Upgrade
 
 
 class Level:
@@ -20,6 +21,8 @@ class Level:
     def __init__(self) -> None:
         # Get display surface
         self.display_surface = pygame.display.get_surface()
+
+        self.game_paused = False
 
         # Sprites group
         self.visible_sprites = YSortCameraGroup()
@@ -33,6 +36,7 @@ class Level:
         self.create_map()
 
         self.ui = UI()
+        self.upgrade = Upgrade(self.player)
 
         self.animation_player = AnimationPlayer()
         self.magic_player = MagicPlayer(self.animation_player)
@@ -157,12 +161,24 @@ class Level:
             self.animation_player.create_particles(
                 attack_type, self.player.rect.center, [self.visible_sprites])
 
+    def add_exp(self, amount: int):
+        """Add exp to player"""
+        self.player.exp += amount
+
+    def toggle_menu(self):
+        """Toggle upgrade menu"""
+        self.game_paused = not self.game_paused
+
     def run(self):
         self.visible_sprites.custom_draw(self.player)
-        self.visible_sprites.update()
-        self.visible_sprites.enemy_update(self.player)
-        self.player_attack_logic()
         self.ui.display(self.player)
+
+        if self.game_paused:
+            self.upgrade.display()
+        else:
+            self.visible_sprites.update()
+            self.visible_sprites.enemy_update(self.player)
+            self.player_attack_logic()
 
 
 class YSortCameraGroup(pygame.sprite.Group):

@@ -21,6 +21,12 @@ ITEM_BOX_SIZE = 80
 UI_FONT = 'graphics/font/joystix.ttf'
 UI_FONT_SIZE = 18
 
+# Upgrade menu
+TEXT_COLOR_SELECTED = '#111111'
+BAR_COLOR = '#EEEEEE'
+BAR_COLOR_SELECTED = '#111111'
+UPGRADE_BG_COLOR_SELECTED = '#EEEEEE'
+
 # General colors
 WATER_COLOR = '#71ddee'
 UI_BG_COLOR = '#222222'

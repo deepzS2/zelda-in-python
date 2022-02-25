@@ -55,11 +55,13 @@ class AnimationPlayer:
         return new_frames
 
     def create_grass_particles(self, pos: Tuple[int, int], *groups: pygame.sprite.AbstractGroup):
+        """Create grass particle animation"""
         animation_frames = choice(self.frames['leaf'])
 
         ParticleEffect(pos, animation_frames, *groups)
 
     def create_particles(self, animation_type: str, pos: Tuple[int, int], *groups: pygame.sprite.AbstractGroup):
+        """Create a particle based on animation_type"""
         animation_frames = self.frames[animation_type]
 
         ParticleEffect(pos, animation_frames, *groups)
