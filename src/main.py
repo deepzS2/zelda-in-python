@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from cmath import log
-from settings import WIDTH, HEIGTH, FPS
+from settings import WATER_COLOR, WIDTH, HEIGTH, FPS
 from level import Level
 import pygame
 import sys
@@ -20,6 +20,10 @@ class Game:
 
         self.level = Level()
 
+        main_sound = pygame.mixer.Sound('audio/main.ogg')
+        main_sound.set_volume(.5)
+        main_sound.play(loops=-1)
+
     def run(self):
         while True:
             for event in pygame.event.get():
@@ -31,7 +35,7 @@ class Game:
                     if event.key == pygame.K_m:
                         self.level.toggle_menu()
 
-            self.screen.fill('black')
+            self.screen.fill(WATER_COLOR)
             self.level.run()
             pygame.display.update()
             self.clock.tick(FPS)

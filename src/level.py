@@ -98,6 +98,7 @@ class Level:
                                       self.obstacle_sprites,
                                       self.damage_player,
                                       self.trigger_death_particles,
+                                      self.add_exp,
                                       [
                                           self.visible_sprites, self.attackable_sprites
                                       ])

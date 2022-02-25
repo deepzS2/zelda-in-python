@@ -8,8 +8,14 @@ from settings import *
 class MagicPlayer:
     def __init__(self, animation_player: AnimationPlayer) -> None:
         self.animation_player = animation_player
+        self.sounds = {
+            'heal': pygame.mixer.Sound('audio/heal.wav'),
+            'flame': pygame.mixer.Sound('audio/Fire.wav')
+        }
 
     def heal(self, player: Player, strength: int, cost: int, *groups: pygame.sprite.AbstractGroup):
+        self.sounds['heal'].play()
+
         if player.energy >= cost:
             player.health += strength
             player.energy -= cost
@@ -23,6 +29,8 @@ class MagicPlayer:
             self.animation_player.create_particles('heal', pos, *groups)
 
     def flame(self, player: Player, cost: int, *groups: pygame.sprite.AbstractGroup):
+        self.sounds['flame'].play()
+
         if player.energy >= cost:
             player.energy -= cost
 

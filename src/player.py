@@ -23,7 +23,7 @@ class Player(Entity):
 
         # Hitbox and obstacles
         self.obstacle_sprites = obstacle_sprites
-        self.hitbox = self.rect.inflate(0, -25)
+        self.hitbox = self.rect.inflate(-6, HITBOX_OFFSET['player'])
 
         # Hitbox damage
         self.vulnerable = True
@@ -38,6 +38,9 @@ class Player(Entity):
         self.switch_duration_cooldown = 200
         self.weapon_index = 0
         self.weapon = list(weapon_data.keys())[self.weapon_index]
+
+        self.weapon_attack_sound = pygame.mixer.Sound('audio/sword.wav')
+        self.weapon_attack_sound.set_volume(0.4)
 
         # Magic
         self.create_magic = create_magic
@@ -105,6 +108,7 @@ class Player(Entity):
             self.attacking = True
             self.attack_time = pygame.time.get_ticks()
             self.create_attack()
+            self.weapon_attack_sound.play()
 
         # Magic
         if keys[pygame.K_LCTRL] and not self.attacking:
